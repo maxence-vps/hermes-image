@@ -11,7 +11,7 @@ The official entrypoint (s6) is untouched.
 
 ## Image
 
-`ghcr.io/maxencemottard/hermes-agent`
+`ghcr.io/maxencemottard/hermes-agent-image`
 
 | Tag | Meaning |
 |---|---|
