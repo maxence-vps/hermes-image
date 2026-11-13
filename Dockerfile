@@ -9,20 +9,21 @@ USER root
 # Installed system-wide; updates come from image rebuilds (auto-updater disabled
 # because the hermes user can't write to /usr/local).
 ARG CLAUDE_CODE_VERSION=latest
-RUN npm install -g --allow-scripts=@anthropic-ai/claude-code \
+RUN npm install -g --prefix /opt/claude-code \
+        --allow-scripts=@anthropic-ai/claude-code \
         "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
  && npm cache clean --force \
- && mv /usr/local/bin/claude /usr/local/bin/claude-real \
- && claude-real --version
+ && /opt/claude-code/bin/claude --version
 
 # Wrapper: always use the subscription (CLAUDE_CODE_OAUTH_TOKEN), never bill an API key
 # even if ANTHROPIC_API_KEY is set for Hermes' own model.
 RUN printf '%s\n' \
         '#!/bin/sh' \
         'unset ANTHROPIC_API_KEY' \
-        'exec /usr/local/bin/claude-real "$@"' \
+        'exec /opt/claude-code/bin/claude "$@"' \
         > /usr/local/bin/claude \
- && chmod 755 /usr/local/bin/claude
+ && chmod 755 /usr/local/bin/claude \
+ && /usr/local/bin/claude --version
 ENV DISABLE_AUTOUPDATER=1
 
 # --- GitHub over HTTPS ---------------------------------------------------------
