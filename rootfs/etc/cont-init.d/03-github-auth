@@ -1,0 +1,25 @@
+#!/command/with-contenv sh
+# Log gh into GitHub at every container start from $GH_TOKEN (or $GITHUB_TOKEN),
+# then make git use gh as its credential helper.
+#
+# Why: Hermes strips GH_TOKEN/GITHUB_TOKEN from the environment of the commands it
+# runs, so gh/git can't rely on the env var. The token is stored by gh in
+# /opt/data/.config/gh (persistent volume) and refreshed on every start.
+
+TOKEN="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
+if [ -z "$TOKEN" ]; then
+  echo "[github-auth] no GH_TOKEN/GITHUB_TOKEN set, skipping"
+  exit 0
+fi
+
+as_hermes() {
+  s6-setuidgid hermes env -u GH_TOKEN -u GITHUB_TOKEN HOME=/opt/data "$@"
+}
+
+if printf '%s' "$TOKEN" | as_hermes gh auth login --hostname github.com --git-protocol https --with-token \
+   && as_hermes gh auth setup-git --hostname github.com; then
+  echo "[github-auth] $(as_hermes gh api user --jq '"logged in as " + .login' 2>&1 | head -n 1)"
+else
+  echo "[github-auth] gh auth login failed, continuing"
+fi
+exit 0

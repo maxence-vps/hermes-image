@@ -4,8 +4,10 @@
 
 - **Claude Code CLI** baked in. `claude` is a wrapper that unsets `ANTHROPIC_API_KEY`,
   so `claude -p` always runs on the subscription (`CLAUDE_CODE_OAUTH_TOKEN`).
-- **GitHub over HTTPS**: git reads `$GITHUB_TOKEN` at use time (never written to disk).
-- **GitHub CLI (`gh`)** for PRs, reviews, Actions runs… authenticated via `$GH_TOKEN`.
+- **GitHub CLI (`gh`)** for PRs, reviews, Actions runs…
+- **GitHub auth at startup**: an s6 cont-init script logs `gh` in from `$GH_TOKEN` / `$GITHUB_TOKEN`
+  and sets it as git's credential helper. Needed because Hermes strips these vars from the
+  commands it runs. Token stored by gh in `/opt/data/.config/gh`, refreshed on every start.
 - **`/workspace`** owned by the `hermes` user, for cloned repos.
 
 The official entrypoint (s6) is untouched.

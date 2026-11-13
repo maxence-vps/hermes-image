@@ -39,11 +39,11 @@ RUN mkdir -p -m 755 /etc/apt/keyrings \
  && rm -rf /var/lib/apt/lists/* \
  && gh --version
 
-# --- GitHub over HTTPS ---------------------------------------------------------
-# Token is read from $GITHUB_TOKEN at use time, never written to disk.
-RUN git config --system credential.https://github.com.helper \
-        '!f() { test "$1" = get || exit 0; echo username=x-access-token; echo "password=$GITHUB_TOKEN"; }; f' \
- && git config --system --add safe.directory '/workspace/*'
+# --- GitHub auth ---------------------------------------------------------------
+# Hermes strips GH_TOKEN/GITHUB_TOKEN from the commands it runs, so gh is logged in
+# at every start from the token (s6 cont-init) and git uses gh as credential helper.
+COPY --chmod=755 rootfs/etc/cont-init.d/03-github-auth /etc/cont-init.d/03-github-auth
+RUN git config --system --add safe.directory '/workspace/*'
 
 # --- Workspace for cloned repos --------------------------------------------
 # A fresh named volume mounted here inherits this ownership.
