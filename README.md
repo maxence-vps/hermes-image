@@ -7,7 +7,7 @@
 - **GitHub CLI (`gh`)** for PRs, reviews, Actions runs…
 - **GitHub auth at startup**: an s6 cont-init script logs `gh` in from `$GH_TOKEN` / `$GITHUB_TOKEN`
   and sets it as git's credential helper. Needed because Hermes strips these vars from the
-  commands it runs. Token stored by gh in `/opt/data/.config/gh`, refreshed on every start.
+  commands it runs. Token stored by gh in `/opt/data/home/.config/gh` (HOME of Hermes commands) and `/opt/data/.config/gh`, refreshed on every start.
 - **`/workspace`** owned by the `hermes` user, for cloned repos.
 
 The official entrypoint (s6) is untouched.
