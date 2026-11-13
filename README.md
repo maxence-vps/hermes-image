@@ -5,6 +5,7 @@
 - **Claude Code CLI** baked in. `claude` is a wrapper that unsets `ANTHROPIC_API_KEY`,
   so `claude -p` always runs on the subscription (`CLAUDE_CODE_OAUTH_TOKEN`).
 - **GitHub over HTTPS**: git reads `$GITHUB_TOKEN` at use time (never written to disk).
+- **GitHub CLI (`gh`)** for PRs, reviews, Actions runs… authenticated via `$GH_TOKEN`.
 - **`/workspace`** owned by the `hermes` user, for cloned repos.
 
 The official entrypoint (s6) is untouched.
