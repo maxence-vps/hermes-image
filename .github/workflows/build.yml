@@ -31,12 +31,12 @@ jobs:
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ACTOR: ${{ github.actor }}
-          OWNER: ${{ github.repository_owner }}
           SHA: ${{ github.sha }}
           HERMES_VERSION: ${{ github.event.inputs.hermes_version || 'latest' }}
         run: |
           set -euo pipefail
-          IMAGE="ghcr.io/$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')/hermes-agent-image"
+          # Image named after the repo (ghcr.io/<owner>/<repo>)
+          IMAGE="ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
           DATE="$(date -u +%Y%m%d)"
           # Resolved version: a new Claude Code release busts the layer cache
           CLAUDE_CODE_VERSION="$(npm view @anthropic-ai/claude-code version)"

@@ -15,7 +15,7 @@ The official entrypoint (s6) is untouched.
 
 ## Image
 
-`ghcr.io/maxencemottard/hermes-agent-image`
+`ghcr.io/maxence-vps/hermes-image` (named after the repo)
 
 | Tag | Meaning |
 |---|---|
