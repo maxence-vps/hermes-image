@@ -2,8 +2,9 @@
 
 [Hermes Agent](https://github.com/NousResearch/hermes-agent) with:
 
-- **Claude Code CLI** baked in. `claude` is a wrapper that unsets `ANTHROPIC_API_KEY`,
-  so `claude -p` always runs on the subscription (`CLAUDE_CODE_OAUTH_TOKEN`).
+- **Claude Code CLI** baked in (`claude` on the `PATH`). Log in once by running `claude` in the
+  container; the session is stored in `/opt/data/home/.claude` (HOME of Hermes commands, on the
+  data volume), so it survives image updates.
 - **GitHub CLI (`gh`)** for PRs, reviews, Actions runs…
 - **GitHub auth at startup**: an s6 cont-init script logs `gh` in from `$GH_TOKEN` / `$GITHUB_TOKEN`
   and sets it as git's credential helper. Needed because Hermes strips these vars from the
@@ -29,8 +30,9 @@ Rebuilt on push to `main`, every Monday (new Hermes / Claude Code releases), or 
 
 | Variable | Purpose |
 |---|---|
-| `CLAUDE_CODE_OAUTH_TOKEN` | From `claude setup-token` (subscription) |
 | `GITHUB_TOKEN` / `GH_TOKEN` | Fine-grained PAT (Contents + Pull requests: read/write) |
-| `ANTHROPIC_API_KEY` | Optional, Hermes' own model only (never used by `claude`) |
+
+Leave `ANTHROPIC_API_KEY` and `CLAUDE_CODE_OAUTH_TOKEN` unset: Claude Code gives them priority over
+the stored login, and `ANTHROPIC_API_KEY` would bill the API instead of the subscription.
 
 Plus the usual Hermes variables (API server, dashboard auth, …).

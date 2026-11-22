@@ -13,17 +13,8 @@ RUN npm install -g --prefix /opt/claude-code \
         --allow-scripts=@anthropic-ai/claude-code \
         "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
  && npm cache clean --force \
- && /opt/claude-code/bin/claude --version
-
-# Wrapper: always use the subscription (CLAUDE_CODE_OAUTH_TOKEN), never bill an API key
-# even if ANTHROPIC_API_KEY is set for Hermes' own model.
-RUN printf '%s\n' \
-        '#!/bin/sh' \
-        'unset ANTHROPIC_API_KEY' \
-        'exec /opt/claude-code/bin/claude "$@"' \
-        > /usr/local/bin/claude \
- && chmod 755 /usr/local/bin/claude \
- && /usr/local/bin/claude --version
+ && ln -s /opt/claude-code/bin/claude /usr/local/bin/claude \
+ && claude --version
 ENV DISABLE_AUTOUPDATER=1
 
 # --- GitHub CLI ----------------------------------------------------------------
