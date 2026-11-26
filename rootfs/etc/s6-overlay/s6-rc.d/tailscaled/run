@@ -13,7 +13,7 @@ chmod 755 /var/run/tailscale
 if [ -n "${TS_AUTHKEY:-${TAILSCALE_AUTHKEY:-}}" ] && [ ! -f /opt/data/.tailscale/tailscaled.state ]; then
     (
         while [ ! -S /var/run/tailscale/tailscaled.sock ]; do sleep 0.5; done
-        tailscale up --authkey="${TS_AUTHKEY:-${TAILSCALE_AUTHKEY}}" --hostname="${TAILSCALE_HOSTNAME:-hermes-agent}"
+        tailscale up --authkey="${TS_AUTHKEY:-${TAILSCALE_AUTHKEY}}" --hostname="${TAILSCALE_HOSTNAME:-hermes-agent}" --operator=hermes
     ) &
 fi
 
