@@ -36,8 +36,27 @@ RUN mkdir -p -m 755 /etc/apt/keyrings \
 COPY --chmod=755 rootfs/etc/cont-init.d/03-github-auth /etc/cont-init.d/03-github-auth
 RUN git config --system --add safe.directory '/workspace/*'
 
+# --- Tailscale -----------------------------------------------------------------
+# Official apt repo with keyring. tailscaled runs under s6 in userspace-networking
+# mode so no /dev/net/tun or NET_ADMIN capability is needed in Docker.
+RUN mkdir -p -m 755 /etc/apt/keyrings \
+ && CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME") \
+ && curl -fsSL "https://pkgs.tailscale.com/stable/debian/${CODENAME}.noarmor.gpg" \
+        -o /etc/apt/keyrings/tailscale-archive-keyring.gpg \
+ && echo "deb [signed-by=/etc/apt/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian ${CODENAME} main" \
+        > /etc/apt/sources.list.d/tailscale.list \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends tailscale \
+ && rm -rf /var/lib/apt/lists/* \
+ && tailscale version
+
+# --- S6 services & SSH config --------------------------------------------------
+COPY rootfs/etc/ssh/ssh_config.d/tailscale.conf /etc/ssh/ssh_config.d/tailscale.conf
+COPY --chmod=755 rootfs/etc/s6-overlay/s6-rc.d/tailscaled /etc/s6-overlay/s6-rc.d/tailscaled
+COPY rootfs/etc/s6-overlay/s6-rc.d/user/contents.d/tailscaled /etc/s6-overlay/s6-rc.d/user/contents.d/tailscaled
+
 # --- Workspace for cloned repos --------------------------------------------
 # A fresh named volume mounted here inherits this ownership.
 RUN mkdir -p /workspace && chown 10000:10000 /workspace
 
-LABEL org.opencontainers.image.description="Hermes Agent with Claude Code CLI and GitHub auth"
+LABEL org.opencontainers.image.description="Hermes Agent with Claude Code CLI, GitHub auth, and Tailscale"

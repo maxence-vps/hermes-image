@@ -1,0 +1,24 @@
+#!/command/with-contenv sh
+# shellcheck shell=sh
+# Tailscaled service. Runs in userspace-networking mode so no TUN device
+# or NET_ADMIN capability is needed inside Docker.
+# State is kept under /opt/data/.tailscale on the persistent volume so
+# node credentials and IP survive container rebuilds.
+
+mkdir -p /opt/data/.tailscale /var/run/tailscale
+chmod 755 /var/run/tailscale
+
+# Optional auto-auth if TS_AUTHKEY or TAILSCALE_AUTHKEY is passed via env
+# and the node has not yet authenticated.
+if [ -n "${TS_AUTHKEY:-${TAILSCALE_AUTHKEY:-}}" ] && [ ! -f /opt/data/.tailscale/tailscaled.state ]; then
+    (
+        while [ ! -S /var/run/tailscale/tailscaled.sock ]; do sleep 0.5; done
+        tailscale up --authkey="${TS_AUTHKEY:-${TAILSCALE_AUTHKEY}}" --hostname="${TAILSCALE_HOSTNAME:-hermes-agent}"
+    ) &
+fi
+
+exec tailscaled \
+    --tun=userspace-networking \
+    --socket=/var/run/tailscale/tailscaled.sock \
+    --statedir=/opt/data/.tailscale \
+    --socks5-server=localhost:1055
