@@ -26,11 +26,9 @@ The official entrypoint (s6) is untouched.
 | `latest` | Latest release build |
 | `vX.Y.Z` / `X.Y.Z` | SemVer release tag managed by Release Please |
 | `vX` / `vX.Y` | Floating major and minor release tags |
-| `YYYYMMDD` | Weekly scheduled build date |
 | `sha-<commit>` | Build from a given commit |
 
-Releases and SemVer tags are automated using [Release Please](https://github.com/googleapis/release-please-action) from Conventional Commits. Images are built and published when a release is merged on `main`, every Monday (new Hermes / Claude Code releases), or manually
-(*Actions → Scheduled & manual build → Run workflow*, optional Hermes base tag).
+Releases and SemVer tags are automated using [Release Please](https://github.com/googleapis/release-please-action) from Conventional Commits. Images are built and published when a release PR is merged on `main`.
 
 ## Environment
 
