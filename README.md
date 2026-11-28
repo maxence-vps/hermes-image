@@ -23,12 +23,12 @@ The official entrypoint (s6) is untouched.
 
 | Tag | Meaning |
 |---|---|
-| `latest` | Last build |
-| `YYYYMMDD` | Build date (use to pin / roll back) |
+| `latest` | Latest release build |
+| `vX.Y.Z` / `X.Y.Z` | SemVer release tag managed by Release Please |
+| `vX` / `vX.Y` | Floating major and minor release tags |
 | `sha-<commit>` | Build from a given commit |
 
-Rebuilt on push to `main`, every Monday (new Hermes / Claude Code releases), or manually
-(*Actions → Build & push image → Run workflow*, optional Hermes base tag).
+Releases and SemVer tags are automated using [Release Please](https://github.com/googleapis/release-please-action) from Conventional Commits. Images are built and published when a release PR is merged on `main`.
 
 ## Environment
 
